@@ -1,11 +1,12 @@
 # Curso Testes Unitários com JUnit
-Curso Testes Unitários com JUnit (AlgaWorks)
 
-# Curso Testes Unitários com JUnit
+Este projeto faz parte do curso *Testes Unitários com JUnit* da AlgaWorks.
+
+Ele reúne várias miniaplicações em um único projeto, pois diferentes cenários serão abordados ao longo do curso.
 
 # Anotações
 
-## Pirâmede de Testes
+## Pirâmide de Testes
 
 A pirâmide de testes é um conceito na engenharia de software que representa a proporção ideal de diferentes tipos de testes em um sistema. Ela foi popularizada por Mike Cohn e ajuda a garantir qualidade no desenvolvimento de software com uma abordagem eficiente de testes automatizados.
 
@@ -34,3 +35,20 @@ A pirâmide é dividida em três camadas principais, do mais frequente e barato 
     - 20% de testes de integração
     - 10% de testes de UI
 - Observação: Algumas variações modernas incluem a pirâmide invertida (muito teste de UI) e o diamante de testes (valorizando mais testes de integração). Mas, na prática, o modelo clássico ainda é o mais eficiente.
+
+## Princípio FIRST
+O princípio FIRST é um conjunto de boas práticas criado por *Robert C. Martin (Uncle Bob)* para garantir a qualidade dos testes automatizados, especialmente os testes de unidade.
+
+Cada letra da sigla FIRST representa uma característica essencial que um bom teste deve ter:
+
+> Rapidez (**Fast**): os testes devem ser rápidos. Devem executar com rapidez. Quando os testes rodam devagar, você não desejará executá-los com frequência. E, consequentemente, não encontrará problemas cedo o bastante para consertá-los facilmente. E você não se sentirá livre para limpar o código, que acabará se degradando.  
+>  
+> Independência (**Independent**): os testes não devem depender uns dos outros. Um teste não deve configurar as condições para o próximo. Você deve ser capaz de executar cada teste de forma independente e na ordem que desejar. Quando eles dependem uns dos outros, se o primeiro falhar causará um efeito dominó de falhas, dificultando o diagnóstico e ocultando os defeitos abaixo dele.  
+>  
+> Repetitividade (**Repeatable**): deve-se poder repetir os testes em qualquer ambiente. Você deve ser capaz de efetuar testes no ambiente de produção, no de garantia de qualidade e no seu notebook enquanto volta para casa de trem sem uma rede disponível. Caso seus testes não possam ser repetidos em qualquer ambiente, então você sempre terá uma desculpa para o motivo das falhas. E também perceberá que não consegue rodar os testes fora o ambiente adequado.  
+>  
+> Autovalidação (**Self-Validating**): os testes devem ter uma saída booleana. Obtenham ou não êxito, você não deve ler um arquivo de registro para saber o resultado. Você não deve ter de comparar manualmente dois arquivos texto para ver se os testes foram bem sucedidos. Se os testes não possuírem autovalidação, então uma falha pode se tornar subjetiva, e executar os testes pode exigir uma longa validação manual.  
+>  
+> Pontualidade (**Timely**): os testes precisam ser escritos em tempo hábil. Devem-se criar os testes de unidade imediatamente antes do código de produção no qual serão aplicados. Se criá-los depois, o teste do código de produção poderá ficar mais difícil. Ou talvez você ache que um pouco do código de produção seja complexo demais para testar. Ou talvez você não crie o código de produção de maneira que possa ser testado.  
+>
+> — Robert C. Martin, *Código Limpo: Habilidades Práticas do Agile Software*, 2011.
