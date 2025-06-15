@@ -3,11 +3,13 @@ package com.junit.utilidade;
 import java.time.Duration;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class SimuladorEsperaTest {
 
     @Test
+    @Disabled("Não é mais aplicáveç")
     void deveEsperarENaoDarTimeout() {
         // Este método espera a conclusão da tarefa mesmo se exceder o tempo limite
         // Assertions.assertTimeout(Duration.ofSeconds(1),
