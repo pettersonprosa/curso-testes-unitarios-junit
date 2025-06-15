@@ -3,14 +3,17 @@ package com.junit.utilidade;
 import java.time.Duration;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 
 public class SimuladorEsperaTest {
 
     @Test
-    @Disabled("Não é mais aplicáveç")
+    // @Disabled("Não é mais aplicável")
+    @EnabledIfEnvironmentVariable(named = "ENV", matches = "DEV")
     void deveEsperarENaoDarTimeout() {
+        //Assumptions.assumeTrue("PROD".equals(System.getenv("ENV")), () -> "Abortando teste: Não deve ser executado em PROD");
+        
         // Este método espera a conclusão da tarefa mesmo se exceder o tempo limite
         // Assertions.assertTimeout(Duration.ofSeconds(1),
         //         () -> SimuladorEspera.esperar(Duration.ofSeconds(10)));
