@@ -95,3 +95,53 @@ public class CalculadoraTest {
     }
 }
 ```
+
+## BDD (Behavior-Driven Development)
+
+**Behavior-Driven Development (BDD)**, ou Desenvolvimento Orientado a Comportamento, é uma abordagem de desenvolvimento de software que visa melhorar a comunicação entre equipes técnicas e não técnicas, além de garantir que o produto atenda às expectativas do negócio. Ela incentiva a descrição do comportamento do sistema a partir da perspectiva do usuário, usando uma linguagem clara, acessível e compreensível por todos os envolvidos.
+
+### Como funciona o BDD?
+- Escreve-se especificações em linguagem natural, focadas no comportamento desejado.
+- Essas especificações são automaticamente convertidas em testes que validam se o sistema se comporta conforme o esperado.
+- Promove colaboração entre desenvolvedores, testers e stakeholders, alinhando expectativas e requisitos.
+
+### Estrutura do BDD
+
+A estrutura do BDD geralmente segue um formato padronizado chamado **Gherkin**, que consiste em três principais componentes:
+
+| Elemento | Propósito | Exemplo |
+|---|---|---|
+| **Feature** | Descreve a funcionalidade geral do sistema ou recurso | `Feature: Login de usuário` |
+| **Scenario** | Situação ou caso de uso específico | `Scenario: Login bem-sucedido` |
+| **Steps** | Descrevem ações ou condições específicas, usando três tipos principais: |  |
+| **Given** | Condição inicial ou pré-requisito | `Given que estou na página de login` |
+| **When** | Ação do usuário ou evento | `When clico em "Entrar"` |
+| **Then** | Resultado esperado | `Then sou redirecionado à página inicial` |
+
+Essa estrutura ajuda a criar testes automáticos claros e fáceis de entender, que refletem o comportamento desejado do sistema.
+
+### Exemplo completo e prático de BDD
+
+```gherkin
+Feature: Login de usuário
+  As a (Como) usuário do sistema,
+  I Want (Quero) fazer login,
+  So that (Para) acessar minhas informações pessoais e funcionalidades protegidas.
+
+  Scenario: Login bem-sucedido com credenciais corretas
+    Given que estou na página de login
+    And tenho uma conta registrada com o e-mail "usuario@example.com" e senha "senha123"
+    When insiro o e-mail "usuario@example.com"
+    And insiro a senha "senha123"
+    And clico no botão "Entrar"
+    Then devo ser direcionado para a minha página inicial
+    And devo ver uma mensagem de boas-vindas
+
+  Scenario: Falha no login com credenciais incorretas
+    Given que estou na página de login
+    When insiro o e-mail "usuario@example.com"
+    And insiro a senha "senhaerrada"
+    And clico no botão "Entrar"
+    Then devo permanecer na página de login
+    And devo ver uma mensagem de erro indicando credenciais inválidas
+```
