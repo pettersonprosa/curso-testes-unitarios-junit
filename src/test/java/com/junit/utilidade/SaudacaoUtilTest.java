@@ -4,11 +4,14 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+@DisplayName("Testes no utilitário de saudação")
 public class SaudacaoUtilTest {
 
     @Test
+    @DisplayName("Deve saldar com bom dia")
     public void saudarComBomDia() {
         int horaValida = 7;
         String saudacao = SaudacaoUtil.saudar(horaValida);
@@ -17,6 +20,7 @@ public class SaudacaoUtilTest {
     }
 
     @Test
+    @DisplayName("Deve saldar com bom dia às 5 horas")
     public void saudarComBomDiaAPartir5h() {
         int horaValida = 5;
         String saudacao = SaudacaoUtil.saudar(horaValida);
