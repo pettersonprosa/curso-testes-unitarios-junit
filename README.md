@@ -52,3 +52,46 @@ Cada letra da sigla FIRST representa uma característica essencial que um bom te
 > Pontualidade (**Timely**): os testes precisam ser escritos em tempo hábil. Devem-se criar os testes de unidade imediatamente antes do código de produção no qual serão aplicados. Se criá-los depois, o teste do código de produção poderá ficar mais difícil. Ou talvez você ache que um pouco do código de produção seja complexo demais para testar. Ou talvez você não crie o código de produção de maneira que possa ser testado.  
 >
 > — Robert C. Martin, *Código Limpo: Habilidades Práticas do Agile Software*, 2011.
+
+## Padrão Triple A
+
+O padrão Triple A (ou AAA) é uma abordagem comum para escrever testes unitários. Ele divide o teste em três etapas claras:
+
+1. Arrange: Preparar o ambiente necessário para o teste, como criar objetos, configurar mocks e definir entradas.
+2. Act: Executar a ação ou método que está sendo testado.
+3. Assert: Verificar se o resultado obtido é o esperado.
+
+Abaixo está um exemplo de um teste unitário usando o padrão Triple A:
+
+Suponha que temos uma classe Calculadora com um método somar que queremos testar:
+
+```java
+public class Calculadora {
+    public int somar(int a, int b) {
+        return a + b;
+    }
+}
+```
+Agora, vamos escrever um teste unitário para o método somar usando o padrão Triple A:
+
+```java
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+public class CalculadoraTest {
+    @Test
+    public void testSomar() {
+        
+        // Arrange: Preparar o ambiente
+        Calculadora calculadora = new Calculadora();
+        int a = 5;
+        int b = 10;
+        int resultadoEsperado = 15;
+        
+        // Act: Executar a ação
+        int resultadoObtido = calculadora.somar(a, b);
+        
+        // Assert: Verificar o resultado
+        assertEquals(resultadoEsperado, resultadoObtido, "A soma de 5 e 10 deve ser 15");
+    }
+}
+```
