@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 public class CarrinhoCompra {
 
@@ -22,8 +23,8 @@ public class CarrinhoCompra {
 	}
 
 	public List<ItemCarrinhoCompra> getItens() {
-		//TODO deve retornar uma nova lista para que a antiga não seja alterada
-		return null;
+		// Retorna uma nova lista para que a antiga não seja alterada
+		return new ArrayList<>(itens);
 	}
 
 	public Cliente getCliente() {
@@ -31,42 +32,94 @@ public class CarrinhoCompra {
 	}
 
 	public void adicionarProduto(Produto produto, int quantidade) {
-		//TODO parâmetros não podem ser nulos, deve retornar uma exception
-		//TODO quantidade não pode ser menor que 1
-		//TODO deve incrementar a quantidade caso o produto já exista
+		// Parâmetros não podem ser nulos, deve retornar uma exception
+		Objects.requireNonNull(produto, "Produto não pode ser nulo");
+
+		// Quantidade não pode ser menor que 1
+		if (quantidade < 1) {
+			throw new IllegalArgumentException("Quantidade deve ser maior que zero");
+		}
+
+		// Deve incrementar a quantidade caso o produto já exista
+		Optional<ItemCarrinhoCompra> itemExistente = buscarItemPorProduto(produto);
+		if (itemExistente.isPresent()) {
+			itemExistente.get().adicionarQuantidade(quantidade);
+		} else {
+			itens.add(new ItemCarrinhoCompra(produto, quantidade));
+		}
 	}
 
 	public void removerProduto(Produto produto) {
-		//TODO parâmetro não pode ser nulo, deve retornar uma exception
-		//TODO caso o produto não exista, deve retornar uma exception
-		//TODO deve remover o produto independente da quantidade
+		// Parâmetro não pode ser nulo, deve retornar uma exception
+		Objects.requireNonNull(produto, "Produto não pode ser nulo");
+
+		// Caso o produto não exista, deve retornar uma exception
+		Optional<ItemCarrinhoCompra> itemExistente = buscarItemPorProduto(produto);
+		if (itemExistente.isEmpty()) {
+			throw new IllegalArgumentException("Produto não encontrado no carrinho");
+		}
+
+		// Deve remover o produto independente da quantidade
+		itens.remove(itemExistente.get());
 	}
 
 	public void aumentarQuantidadeProduto(Produto produto) {
-		//TODO parâmetro não pode ser nulo, deve retornar uma exception
-		//TODO caso o produto não exista, deve retornar uma exception
-		//TODO deve aumentar em um quantidade do produto
+		// Parâmetro não pode ser nulo, deve retornar uma exception
+		Objects.requireNonNull(produto, "Produto não pode ser nulo");
+
+		// Caso o produto não exista, deve retornar uma exception
+		Optional<ItemCarrinhoCompra> itemExistente = buscarItemPorProduto(produto);
+		if (itemExistente.isEmpty()) {
+			throw new IllegalArgumentException("Produto não encontrado no carrinho");
+		}
+
+		// Deve aumentar em um quantidade do produto
+		itemExistente.get().adicionarQuantidade(1);
 	}
 
     public void diminuirQuantidadeProduto(Produto produto) {
-		//TODO parâmetro não pode ser nulo, deve retornar uma exception
-		//TODO caso o produto não exista, deve retornar uma exception
-		//TODO deve diminuir em um quantidade do produto, caso tenha apenas um produto, deve remover da lista
+		// Parâmetro não pode ser nulo, deve retornar uma exception
+		Objects.requireNonNull(produto, "Produto não pode ser nulo");
+
+		// Caso o produto não exista, deve retornar uma exception
+		Optional<ItemCarrinhoCompra> itemExistente = buscarItemPorProduto(produto);
+		if (itemExistente.isEmpty()) {
+			throw new IllegalArgumentException("Produto não encontrado no carrinho");
+		}
+
+		// Deve diminuir em um quantidade do produto, caso tenha apenas um produto, deve remover da lista
+		ItemCarrinhoCompra item = itemExistente.get();
+		if (item.getQuantidade() == 1) {
+			itens.remove(item);
+		} else {
+			item.subtrairQuantidade(1);
+		}
 	}
 
     public BigDecimal getValorTotal() {
-		//TODO implementar soma do valor total de todos itens
-		return null;
+		// Implementar soma do valor total de todos itens
+		return itens.stream()
+				.map(ItemCarrinhoCompra::getValorTotal)
+				.reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
 	public int getQuantidadeTotalDeProdutos() {
-		//TODO retorna quantidade total de itens no carrinho
-		//TODO Exemplo em um carrinho com 2 itens, com a quantidade 2 e 3 para cada item respectivamente, deve retornar 5
-		return 0;
+		// Retorna quantidade total de itens no carrinho
+		// Exemplo em um carrinho com 2 itens, com a quantidade 2 e 3 para cada item respectivamente, deve retornar 5
+		return itens.stream()
+				.mapToInt(ItemCarrinhoCompra::getQuantidade)
+				.sum();
 	}
 
 	public void esvaziar() {
-		//TODO deve remover todos os itens
+		// Deve remover todos os itens
+		itens.clear();
+	}
+
+	private Optional<ItemCarrinhoCompra> buscarItemPorProduto(Produto produto) {
+		return itens.stream()
+				.filter(item -> item.getProduto().equals(produto))
+				.findFirst();
 	}
 
 	@Override
