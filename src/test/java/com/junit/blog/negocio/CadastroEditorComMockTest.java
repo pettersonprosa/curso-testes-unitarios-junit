@@ -8,28 +8,35 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.junit.blog.armazenamento.ArmazenamentoEditor;
 import com.junit.blog.modelo.Editor;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+@ExtendWith(MockitoExtension.class)
 public class CadastroEditorComMockTest {
 
-    CadastroEditor cadastroEditor;
     Editor editor;
+    
+    @Mock // a cada novo teste instânciado um novo mock - não haverá problema de um teste interferir no outro
+    ArmazenamentoEditor armazenamentoEditor;
+    
+    @Mock
+    GerenciadorEnvioEmail gerenciadorEnvioEmail;
+    
+    @InjectMocks // inteja os dois mocks acima para o CadastroEditor; cria uma nova instância a cada novo teste
+    CadastroEditor cadastroEditor;
 
     @BeforeEach
     void beforeEach() {
         editor = new Editor(null, "joao", "joao@email.com", BigDecimal.TEN, true);
-
-        ArmazenamentoEditor armazenamentoEditor = Mockito.mock(ArmazenamentoEditor.class);
         Mockito.when(armazenamentoEditor.salvar(editor))
                 .thenReturn(new Editor(1L, "joao", "joao@email.com", BigDecimal.TEN, true));
-        
-        GerenciadorEnvioEmail gerenciadorEnvioEmail = Mockito.mock(GerenciadorEnvioEmail.class);
-
-        cadastroEditor = new CadastroEditor(armazenamentoEditor, gerenciadorEnvioEmail);
     }
 
     @Test
