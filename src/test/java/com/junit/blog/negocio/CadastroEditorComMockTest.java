@@ -11,6 +11,8 @@ import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -24,6 +26,9 @@ import com.junit.blog.modelo.Editor;
 public class CadastroEditorComMockTest {
 
     Editor editor;
+
+    @Captor
+    ArgumentCaptor<Mensagem> mensagemArgumentCaptor = ArgumentCaptor.forClass(Mensagem.class);
     
     @Mock // a cada novo teste instânciado um novo mock - não haverá problema de um teste interferir no outro
     ArmazenamentoEditor armazenamentoEditor;
@@ -69,4 +74,17 @@ public class CadastroEditorComMockTest {
                 () -> Mockito.verify(gerenciadorEnvioEmail, Mockito.never()).enviarEmail(Mockito.any()));
     }
 
+    @Test
+    void Dado_um_editor_valido_Quando_cadastrar_Entao_deve_enviar_email_com_destino_ao_editor() {
+        // ArgumentCaptor<Mensagem> mensagemArgumentCaptor = ArgumentCaptor.forClass(Mensagem.class);
+
+        Editor editorSalvo = cadastroEditor.criar(editor);;
+
+        Mockito.verify(gerenciadorEnvioEmail).enviarEmail(mensagemArgumentCaptor.capture());
+
+        Mensagem mensagemPassada = mensagemArgumentCaptor.getValue();
+
+        assertEquals(editorSalvo.getEmail(), mensagemPassada.getDestinatario());
+    }
+    
 }
