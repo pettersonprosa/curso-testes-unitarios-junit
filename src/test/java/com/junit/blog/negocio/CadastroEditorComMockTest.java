@@ -16,6 +16,7 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.junit.blog.armazenamento.ArmazenamentoEditor;
@@ -25,7 +26,8 @@ import com.junit.blog.modelo.Editor;
 @ExtendWith(MockitoExtension.class)
 public class CadastroEditorComMockTest {
 
-    Editor editor;
+    @Spy // a cada novo teste instânciado um novo Mock.spy da classe
+    Editor editor = new Editor(null, "joao", "joao@email.com", BigDecimal.TEN, true);
 
     @Captor
     ArgumentCaptor<Mensagem> mensagemArgumentCaptor = ArgumentCaptor.forClass(Mensagem.class);
@@ -41,7 +43,6 @@ public class CadastroEditorComMockTest {
 
     @BeforeEach
     void beforeEach() {
-        editor = new Editor(null, "joao", "joao@email.com", BigDecimal.TEN, true);
         Mockito.when(armazenamentoEditor.salvar(Mockito.any(Editor.class)))
                 .thenAnswer(invocacao -> {
                     Editor editorPassado = (Editor) invocacao.getArgument(0);
@@ -86,5 +87,11 @@ public class CadastroEditorComMockTest {
 
         assertEquals(editorSalvo.getEmail(), mensagemPassada.getDestinatario());
     }
-    
+
+    @Test
+    void Dado_um_editor_valido_Quando_cadastrar_Entao_deve_verificar_o_email() {
+        cadastroEditor.criar(editor);
+        Mockito.verify(editor, Mockito.atLeast(1)).getEmail();
+    }
+
 }
