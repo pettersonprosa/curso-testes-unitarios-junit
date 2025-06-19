@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -20,6 +21,7 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.junit.blog.armazenamento.ArmazenamentoEditor;
+import com.junit.blog.exception.RegraNegocioException;
 import com.junit.blog.modelo.Editor;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
@@ -92,6 +94,17 @@ public class CadastroEditorComMockTest {
     void Dado_um_editor_valido_Quando_cadastrar_Entao_deve_verificar_o_email() {
         cadastroEditor.criar(editor);
         Mockito.verify(editor, Mockito.atLeast(1)).getEmail();
+    }
+
+    @Test
+    void Dado_um_editor_com_email_existente_Quando_cadastrar_Entao_deve_lancar_exception() {
+        Mockito.when(armazenamentoEditor.encontrarPorEmail("joao@email.com"))
+                .thenReturn(Optional.empty())
+                .thenReturn(Optional.of(editor));
+
+        Editor editorComEmailExistente = new Editor(null, "joao", "joao@email.com", BigDecimal.TEN, true);
+        cadastroEditor.criar(editor);
+        assertThrows(RegraNegocioException.class, ()-> cadastroEditor.criar(editorComEmailExistente));
     }
 
 }
