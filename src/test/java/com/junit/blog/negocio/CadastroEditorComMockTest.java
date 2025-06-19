@@ -3,6 +3,9 @@ package com.junit.blog.negocio;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -23,6 +26,7 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.junit.blog.armazenamento.ArmazenamentoEditor;
+import com.junit.blog.exception.EditorNaoEncontradoException;
 import com.junit.blog.exception.RegraNegocioException;
 import com.junit.blog.modelo.Editor;
 
@@ -30,23 +34,23 @@ import com.junit.blog.modelo.Editor;
 @ExtendWith(MockitoExtension.class)
 public class CadastroEditorComMockTest {
 
-    @Spy // a cada novo teste instânciado um novo Mock.spy da classe
-    Editor editor = new Editor(null, "joao", "joao@email.com", BigDecimal.TEN, true);
-
     @Captor
     ArgumentCaptor<Mensagem> mensagemArgumentCaptor = ArgumentCaptor.forClass(Mensagem.class);
-    
+
     @Mock // a cada novo teste instânciado um novo mock - não haverá problema de um teste interferir no outro
     ArmazenamentoEditor armazenamentoEditor;
-    
+
     @Mock
     GerenciadorEnvioEmail gerenciadorEnvioEmail;
-    
+
     @InjectMocks // inteja os dois mocks acima para o CadastroEditor; cria uma nova instância a cada novo teste
     CadastroEditor cadastroEditor;
 
     @Nested
     class CadastroComEditorValido {
+
+        @Spy // a cada novo teste instânciado um novo Mock.spy da classe
+        Editor editor = new Editor(null, "joao", "joao@email.com", BigDecimal.TEN, true);
 
         @BeforeEach
         void beforeEach() {
@@ -67,7 +71,8 @@ public class CadastroEditorComMockTest {
         @Test
         void Dado_um_editor_valido_Quando_criar_Entao_deve_chamar_metodo_salvar_do_armazenamento() {
             cadastroEditor.criar(editor);
-            // Verifica se o método 'salvar' do armazenamento foi chamado exatamente uma vez com o objeto 'editor'
+            // Verifica se o método 'salvar' do armazenamento foi chamado exatamente uma vez
+            // com o objeto 'editor'
             Mockito.verify(armazenamentoEditor, Mockito.times(1))
                     .salvar(Mockito.eq(editor));
         }
@@ -84,7 +89,8 @@ public class CadastroEditorComMockTest {
 
         @Test
         void Dado_um_editor_valido_Quando_cadastrar_Entao_deve_enviar_email_com_destino_ao_editor() {
-            // ArgumentCaptor<Mensagem> mensagemArgumentCaptor = ArgumentCaptor.forClass(Mensagem.class);
+            // ArgumentCaptor<Mensagem> mensagemArgumentCaptor =
+            // ArgumentCaptor.forClass(Mensagem.class);
 
             Editor editorSalvo = cadastroEditor.criar(editor);
             ;
@@ -127,10 +133,53 @@ public class CadastroEditorComMockTest {
     class CadastroComEditorNull {
         @Test
         void Dado_um_editor_null_Quando_cadastrar_Entao_deve_lancar_exception() {
-            assertThrows(NullPointerException.class, ()-> cadastroEditor.criar(null));
+            assertThrows(NullPointerException.class, () -> cadastroEditor.criar(null));
             Mockito.verify(armazenamentoEditor, Mockito.never()).salvar(Mockito.any());
             Mockito.verify(gerenciadorEnvioEmail, Mockito.never()).enviarEmail(Mockito.any());
         }
+    }
+
+    @Nested
+    class EdicaoComEditorValido {
+        @Spy // a cada novo teste instânciado um novo Mock.spy da classe
+        Editor editor = new Editor(1L, "joao", "joao@email.com", BigDecimal.TEN, true);
+
+        @BeforeEach
+        void beforeEach() {
+            Mockito.when(armazenamentoEditor.salvar(editor))
+                    .thenAnswer(invocacao -> invocacao.getArgument(0, Editor.class));
+            Mockito.when(armazenamentoEditor.encontrarPorId(1L)).thenReturn(Optional.of(editor));
+        }
+
+        @Test
+        void Dado_um_editor_valido_Quando_editar_entao_deve_alterar_editor_salvo() {
+            Editor editorAtualizado = new Editor(1L, "joao silva", "joao.silva@email.com",
+                    BigDecimal.ZERO, false);
+            cadastroEditor.editar(editorAtualizado);
+            Mockito.verify(editor, times(1)).atualizarComDados(editorAtualizado);
+
+            InOrder inOrder = Mockito.inOrder(editor, armazenamentoEditor);
+            inOrder.verify(editor).atualizarComDados(editorAtualizado);
+            inOrder.verify(armazenamentoEditor).salvar(editorAtualizado);
+            
+        }
+    }
+
+    @Nested
+    class EdicaoComEditorInexistente {
+        Editor editor = new Editor(99L, "joao", "joao@email.com", BigDecimal.TEN, true);
+
+        @BeforeEach
+        void beforeEach() {
+            Mockito.when(armazenamentoEditor.encontrarPorId(99L)).thenReturn(Optional.empty());
+        }
+
+        @Test
+        void Dado_um_editor_que_nao_exista_Quando_editar_Entao_deve_lancar_exception() {
+            assertThrows(EditorNaoEncontradoException.class, ()-> cadastroEditor.editar(editor));
+            verify(armazenamentoEditor, never()).salvar(Mockito.any(Editor.class));
+        }
+
     }
 
 }
