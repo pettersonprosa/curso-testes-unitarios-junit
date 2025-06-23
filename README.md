@@ -248,3 +248,72 @@ assertTrue(spyList.contains("one")); // Comportamento real
 | Verificações   | Não faz verificações | Verifica chamadas | Pode verificar chamadas |
 | Uso típico     | Isolar código      | Testar interações  | Testar parcialmente objetos reais |
 
+## Object Mother Pattern
+
+O **Object Mother** é um padrão de design (design pattern) usado em testes de software para facilitar a criação de objetos de teste com dados consistentes e válidos.
+
+### O que é o Object Mother?
+
+É um padrão que encapsula a lógica de criação de objetos de teste em métodos factory, permitindo:
+
+- Criar instâncias de objetos com dados padrão para testes
+- Reduzir a duplicação de código nos testes
+- Manter a consistência dos dados de teste
+- Facilitar a manutenção quando a estrutura das classes muda
+
+### Como funciona
+
+1. Uma classe "Object Mother" contém métodos estáticos que retornam objetos configurados
+2. Cada método cria um objeto em um estado específico (válido, inválido, edge case)
+3. Os testes chamam esses métodos em vez de instanciar objetos manualmente
+
+### Exemplo em Java
+
+```java
+public class CustomerObjectMother {
+    
+    public static Customer createValidCustomer() {
+        return new Customer("John Doe", "john@example.com", "123-456-7890");
+    }
+    
+    public static Customer createCustomerWithInvalidEmail() {
+        return new Customer("John Doe", "invalid-email", "123-456-7890");
+    }
+    
+    public static Customer createPremiumCustomer() {
+        Customer customer = new Customer("Premium User", "premium@example.com", "987-654-3210");
+        customer.setPremium(true);
+        return customer;
+    }
+}
+```
+
+### Uso nos testes
+
+```java
+@Test
+public void testValidCustomer() {
+    Customer customer = CustomerObjectMother.createValidCustomer();
+    assertTrue(customer.isValid());
+}
+
+@Test
+public void testPremiumDiscount() {
+    Customer customer = CustomerObjectMother.createPremiumCustomer();
+    assertEquals(0.9, customer.getDiscountRate(), 0.01);
+}
+```
+
+### Vantagens
+
+- **Consistência**: Todos os testes usam os mesmos dados de teste
+- **Manutenção**: Mudanças nos construtores afetam apenas a Object Mother
+- **Legibilidade**: Testes ficam mais claros e focados no comportamento
+- **Produtividade**: Reduz o tempo para escrever novos testes
+
+### Quando usar
+
+- Quando há muitos testes que criam os mesmos objetos repetidamente  
+- Quando a criação dos objetos apresenta alta complexidade  
+- Quando é necessário garantir consistência nos dados de teste  
+- Quando os objetos de domínio possuem múltiplas combinações de estado válido  
