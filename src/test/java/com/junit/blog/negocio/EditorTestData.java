@@ -8,15 +8,19 @@ public class EditorTestData {
 
     private EditorTestData() {}
 
-    public static Editor umEditoNovo() {
-        return new Editor(null, "joao", "joao@email.com", BigDecimal.TEN, true);
+    public static Editor.Builder umEditorNovo() {
+        return Editor.builder()
+                .withNome("joao")
+                .withEmail("joao@email.com")
+                .withValorPagoPorPalavra(BigDecimal.TEN)
+                .withPremium(true);
     }
 
-    public static Editor umEditorExistente() {
-        return new Editor(1L, "joao", "joao@email.com", BigDecimal.TEN, true);
+    public static Editor.Builder umEditorExistente() {
+        return umEditorNovo().withId(1L);
     }
 
-    public static Editor umEditorComIdInexistente() {
-        return new Editor(99L, "joao", "joao@email.com", BigDecimal.TEN, true);
+    public static Editor.Builder umEditorComIdInexistente() {
+        return umEditorNovo().withId(99L);
     }
 }
