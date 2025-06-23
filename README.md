@@ -98,7 +98,23 @@ public class CalculadoraTest {
 
 ## BDD (Behavior-Driven Development)
 
-**Behavior-Driven Development (BDD)**, ou Desenvolvimento Orientado a Comportamento, é uma abordagem de desenvolvimento de software que visa melhorar a comunicação entre equipes técnicas e não técnicas, além de garantir que o produto atenda às expectativas do negócio. Ela incentiva a descrição do comportamento do sistema a partir da perspectiva do usuário, usando uma linguagem clara, acessível e compreensível por todos os envolvidos.
+**Behavior-Driven Development (BDD)**, ou Desenvolvimento Orientado a Comportamento, é uma metodologia de desenvolvimento ágil de software que foi originalmente nomeada em 2003 por Dan North como uma resposta ao desenvolvimento orientado a testes (TDD).
+
+### Definição Principal
+
+BDD envolve nomear testes de software usando linguagem de domínio para descrever o comportamento do código, utilizando uma linguagem específica de domínio (DSL) com construções em linguagem natural (como sentenças similares ao inglês) que podem expressar o comportamento e os resultados esperados.
+
+### Características Fundamentais
+
+**Colaboração entre equipes:** BDD é uma técnica de desenvolvimento ágil que encoraja a colaboração entre desenvolvedores, QA e participantes não-técnicos ou de negócio em um projeto de software.
+
+**Metodologia "outside-in":** BDD é uma metodologia "de fora para dentro" que começa identificando resultados de negócio e depois detalha o conjunto de funcionalidades que alcançarão esses resultados.
+
+**Processo de desenvolvimento:** BDD é um processo de engenharia de software que deriva do Desenvolvimento Orientado a Testes (TDD) e do Desenvolvimento Orientado a Testes de Aceitação (ATDD).
+
+### Objetivo Principal
+
+O BDD foi criado para resolver confusões comuns no TDD, ajudando programadores a saber por onde começar, o que testar, quanto testar de uma vez, como nomear seus testes e como entender por que um teste falha. Essencialmente, é "uma metodologia para desenvolver software através de comunicação contínua baseada em exemplos entre desenvolvedores, QAs e analistas de negócio".
 
 ### Como funciona o BDD?
 - Escreve-se especificações em linguagem natural, focadas no comportamento desejado.
@@ -145,3 +161,90 @@ Feature: Login de usuário
     Then devo permanecer na página de login
     And devo ver uma mensagem de erro indicando credenciais inválidas
 ```
+
+## Stub, Mock e Spy em Testes (Java)
+
+Em testes de software, especialmente no desenvolvimento orientado a testes (TDD) e testes unitários, frequentemente precisamos isolar o código sob teste de suas dependências externas (como bancos de dados, APIs ou serviços). Para isso, utilizamos objetos de teste que simulam comportamentos controlados.
+
+Os três principais tipos são:
+- Stub: Fornece respostas pré-definidas para chamadas de métodos, sem preocupação com interações.
+- Mock: Além de simular comportamentos, verifica se métodos foram chamados conforme o esperado.
+- Spy: Permite a execução real de um objeto, mas com a capacidade de substituir (mockar) ou rastrear chamadas específicas.
+
+### Stub
+
+**O que é**: Um Stub é um objeto simplificado que fornece respostas pré-programadas para chamadas de método durante os testes.
+
+**Como funciona**:
+- Substitui um objeto real por uma implementação simplificada
+- Retorna valores pré-definidos quando seus métodos são chamados
+- Não verifica como/interações com o objeto
+
+**Quando usar**: Quando você precisa isolar seu código de dependências externas e controlar os valores retornados por essas dependências.
+
+**Exemplo em Java (Mockito)**:
+```java
+UserRepository userStub = mock(UserRepository.class);
+when(userStub.findById(anyLong())).thenReturn(new User("John Doe"));
+
+UserService service = new UserService(userStub);
+User user = service.getUser(1L); // Sempre retornará John Doe
+```
+
+### Mock
+
+**O que é**: Um Mock é um objeto que simula o comportamento de um objeto real e pode verificar como ele foi interagido.
+
+**Como funciona**:
+- Registra chamadas de método
+- Pode retornar valores pré-definidos como um Stub
+- Verifica se os métodos foram chamados, com quais parâmetros e quantas vezes
+
+**Quando usar**: Quando você precisa verificar as interações entre seu código e suas dependências.
+
+**Exemplo em Java (Mockito)**:
+```java
+EmailService emailMock = mock(EmailService.class);
+UserService service = new UserService(emailMock);
+
+service.sendWelcomeEmail("user@test.com");
+
+verify(emailMock).sendEmail("user@test.com", "Welcome!");
+```
+
+### Spy
+
+**O que é**: Um Spy é um objeto que envolve um objeto real, permitindo que você substitua alguns métodos enquanto mantém o comportamento original para outros.
+
+**Como funciona**:
+- Chama os métodos reais por padrão
+- Permite substituir (stub) métodos específicos
+- Pode verificar interações como um Mock
+
+**Quando usar**: Quando você quer testar a maioria do comportamento real de um objeto, mas precisa substituir ou verificar apenas algumas partes.
+
+**Exemplo em Java (Mockito)**:
+```java
+List<String> realList = new ArrayList<>();
+List<String> spyList = spy(realList);
+
+// Substitui um método específico
+when(spyList.size()).thenReturn(100);
+
+// Outros métodos funcionam normalmente
+spyList.add("one");
+spyList.add("two");
+
+assertEquals(2, spyList.size()); // Retorna 100 por causa do stub
+assertTrue(spyList.contains("one")); // Comportamento real
+```
+
+### Diferenças Principais
+
+| Característica | Stub               | Mock               | Spy                |
+|----------------|--------------------|--------------------|--------------------|
+| Objetivo       | Fornecer respostas | Verificar interações | Observar objeto real |
+| Comportamento  | Totalmente controlado | Totalmente controlado | Real por padrão, substituível |
+| Verificações   | Não faz verificações | Verifica chamadas | Pode verificar chamadas |
+| Uso típico     | Isolar código      | Testar interações  | Testar parcialmente objetos reais |
+
