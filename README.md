@@ -317,3 +317,52 @@ public void testPremiumDiscount() {
 - Quando a criação dos objetos apresenta alta complexidade  
 - Quando é necessário garantir consistência nos dados de teste  
 - Quando os objetos de domínio possuem múltiplas combinações de estado válido  
+
+## Testes Parametrizados
+
+Os testes parametrizados são uma técnica de automação de testes que permite executar o mesmo teste com diferentes conjuntos de dados de entrada, evitando duplicação de código e tornando os testes mais eficientes e abrangentes. 
+
+### Como funcionam
+
+O funcionamento básico envolve três componentes principais:
+
+**Definição dos parâmetros**: Você especifica os diferentes valores que serão usados como entrada para o teste. Isso pode ser feito através de anotações, arquivos externos, ou métodos que retornam coleções de dados.
+
+**Método de teste**: Um único método que recebe os parâmetros como argumentos e executa a lógica de teste usando esses valores.
+
+**Execução**: O framework de teste automaticamente executa o método para cada conjunto de parâmetros, tratando cada execução como um teste individual.
+
+### Exemplos práticos
+
+Em **JUnit 5** (Java):
+```java
+@ParameterizedTest
+@ValueSource(ints = {1, 2, 3, 5, 8})
+void testEhPositivo(int numero) {
+    assertTrue(numero > 0);
+}
+
+@ParameterizedTest
+@CsvSource({
+    "1, 1, 2",
+    "2, 3, 5", 
+    "5, 8, 13"
+})
+void testSoma(int a, int b, int esperado) {
+    assertEquals(esperado, a + b);
+}
+```
+
+### Vantagens
+
+**Redução de duplicação**: Elimina a necessidade de escrever múltiplos métodos de teste similares.
+
+**Cobertura ampliada**: Facilita testar mais cenários e casos extremos sem aumentar significativamente o código.
+
+**Manutenibilidade**: Mudanças na lógica de teste precisam ser feitas em apenas um lugar.
+
+**Legibilidade**: Os dados de teste ficam claramente separados da lógica, tornando mais fácil entender quais cenários estão sendo testados.
+
+**Relatórios detalhados**: Cada execução é reportada individualmente, facilitando identificar exatamente qual conjunto de dados causou uma falha.
+
+Os testes parametrizados são especialmente úteis para validação de entrada, testes de cálculos matemáticos, verificação de regras de negócio com diferentes condições, e qualquer situação onde é necessário verificar o mesmo comportamento com dados variados.
