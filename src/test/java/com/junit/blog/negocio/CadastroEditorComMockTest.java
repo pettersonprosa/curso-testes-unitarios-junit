@@ -50,7 +50,7 @@ public class CadastroEditorComMockTest {
     class CadastroComEditorValido {
 
         @Spy // a cada novo teste instânciado um novo Mock.spy da classe
-        Editor editor = new Editor(null, "joao", "joao@email.com", BigDecimal.TEN, true);
+        Editor editor = EditorTestData.umEditoNovo();
 
         @BeforeEach
         void beforeEach() {
@@ -114,7 +114,7 @@ public class CadastroEditorComMockTest {
                     .thenReturn(Optional.empty())
                     .thenReturn(Optional.of(editor));
 
-            Editor editorComEmailExistente = new Editor(null, "joao", "joao@email.com", BigDecimal.TEN, true);
+            Editor editorComEmailExistente = EditorTestData.umEditoNovo();
             cadastroEditor.criar(editor);
             assertThrows(RegraNegocioException.class, () -> cadastroEditor.criar(editorComEmailExistente));
         }
@@ -142,7 +142,7 @@ public class CadastroEditorComMockTest {
     @Nested
     class EdicaoComEditorValido {
         @Spy // a cada novo teste instânciado um novo Mock.spy da classe
-        Editor editor = new Editor(1L, "joao", "joao@email.com", BigDecimal.TEN, true);
+        Editor editor = EditorTestData.umEditorExistente();
 
         @BeforeEach
         void beforeEach() {
@@ -153,8 +153,12 @@ public class CadastroEditorComMockTest {
 
         @Test
         void Dado_um_editor_valido_Quando_editar_entao_deve_alterar_editor_salvo() {
-            Editor editorAtualizado = new Editor(1L, "joao silva", "joao.silva@email.com",
-                    BigDecimal.ZERO, false);
+            Editor editorAtualizado = EditorTestData.umEditorExistente();
+            editorAtualizado.setNome("joao silva");
+            editorAtualizado.setEmail("joao.silva@email.com");
+            editorAtualizado.setValorPagoPorPalavra(BigDecimal.ZERO);
+            editorAtualizado.setPremium(false);
+            
             cadastroEditor.editar(editorAtualizado);
             Mockito.verify(editor, times(1)).atualizarComDados(editorAtualizado);
 
@@ -167,7 +171,7 @@ public class CadastroEditorComMockTest {
 
     @Nested
     class EdicaoComEditorInexistente {
-        Editor editor = new Editor(99L, "joao", "joao@email.com", BigDecimal.TEN, true);
+        Editor editor = EditorTestData.umEditorComIdInexistente();
 
         @BeforeEach
         void beforeEach() {
