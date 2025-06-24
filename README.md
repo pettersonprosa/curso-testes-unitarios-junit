@@ -366,3 +366,37 @@ void testSoma(int a, int b, int esperado) {
 **Relatórios detalhados**: Cada execução é reportada individualmente, facilitando identificar exatamente qual conjunto de dados causou uma falha.
 
 Os testes parametrizados são especialmente úteis para validação de entrada, testes de cálculos matemáticos, verificação de regras de negócio com diferentes condições, e qualquer situação onde é necessário verificar o mesmo comportamento com dados variados.
+
+## Análise de Cobertura - Test Coverage
+
+Test Coverage (Análise de Cobertura) é uma métrica usada em testes de software para medir quanto do código-fonte de um programa é executado durante a execução dos testes. Ela ajuda a identificar partes do código que não foram testadas, permitindo que os desenvolvedores criem testes adicionais para aumentar a confiabilidade do software.
+
+### O que é Test Coverage?
+É uma medida quantitativa que indica a porcentagem do código que foi exercitada pelos testes. Quanto maior a cobertura, maior a confiança de que o código foi validado contra possíveis erros.
+Tipos comuns de cobertura:
+
+1. Cobertura de Linhas (Line Coverage) – Verifica se cada linha de código foi executada.
+2. Cobertura de Branches (Branch Coverage) – Avalia se todos os caminhos condicionais (if/else, loops) foram testados.
+3. Cobertura de Funções (Function Coverage) – Verifica se todas as funções/métodos foram chamadas.
+4. Cobertura de Instruções (Statement Coverage) – Similar à cobertura de linhas, mas foca em blocos lógicos.
+5. Cobertura de Condições (Condition Coverage) – Garante que todas as subexpressões booleanas foram avaliadas como verdadeiras e falsas.
+
+### Como Funciona?
+1. Instrumentação do Código
+    - Ferramentas de cobertura (como JaCoCo para Java, Coverage.py para Python, Istanbul para JavaScript) inserem marcadores no código para rastrear quais partes são executadas.
+2. Execução dos Testes
+    - Os testes (unitários, integração, etc.) são executados, e a ferramenta registra quais linhas, branches ou funções foram acessadas.
+3. Geração do Relatório
+    - A ferramenta gera um relatório mostrando:
+        - % de cobertura alcançada.
+        - Trechos de código não testados.
+        - Sugestões para melhorar os testes.
+4. Análise e Melhoria
+    - A equipe revisa o relatório e cria novos testes para cobrir as partes faltantes.
+
+### Por que Test Coverage é importante?
+- Identifica código não testado – Evita bugs em áreas negligenciadas.
+- Melhora a qualidade do software – Garante que a maior parte do código seja validada.
+- Ajuda em refatorações – Se os testes cobrem bem o código, mudanças podem ser feitas com mais segurança.
+- ⚠ Não é 100% garantia – Alta cobertura não significa ausência de bugs, apenas que o código foi executado.
+
