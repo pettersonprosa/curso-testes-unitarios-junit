@@ -70,8 +70,7 @@ public class CadastroEditorComMockTest {
         @Test
         void Dado_um_editor_valido_Quando_criar_Entao_deve_chamar_metodo_salvar_do_armazenamento() {
             cadastroEditor.criar(editor);
-            // Verifica se o método 'salvar' do armazenamento foi chamado exatamente uma vez
-            // com o objeto 'editor'
+            // Verifica se o método 'salvar' do armazenamento foi chamado exatamente uma vez com o objeto 'editor'
             Mockito.verify(armazenamentoEditor, Mockito.times(1))
                     .salvar(Mockito.eq(editor));
         }
@@ -88,11 +87,9 @@ public class CadastroEditorComMockTest {
 
         @Test
         void Dado_um_editor_valido_Quando_cadastrar_Entao_deve_enviar_email_com_destino_ao_editor() {
-            // ArgumentCaptor<Mensagem> mensagemArgumentCaptor =
-            // ArgumentCaptor.forClass(Mensagem.class);
+            // ArgumentCaptor<Mensagem> mensagemArgumentCaptor = ArgumentCaptor.forClass(Mensagem.class);
 
             Editor editorSalvo = cadastroEditor.criar(editor);
-            ;
 
             Mockito.verify(gerenciadorEnvioEmail).enviarEmail(mensagemArgumentCaptor.capture());
 
