@@ -61,6 +61,37 @@
                     </archive>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.13</version>
+                <executions>
+
+                    <!-- 
+                        Esta execução configura o agente do JaCoCo. 
+                        Ele será anexado ao processo de testes para coletar dados de cobertura. 
+                        Sem isso, o relatório não pode ser gerado.
+                    -->
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal> <!-- Prepara o agente JaCoCo para capturar os dados de cobertura -->
+                        </goals>
+                    </execution>
+
+                    <!-- 
+                        Esta execução gera o relatório de cobertura após os testes, 
+                        na fase "prepare-package". Isso produz relatórios HTML/XML com os resultados da cobertura. 
+                    -->
+                    <execution>
+                        <id>report</id>
+                        <phase>prepare-package</phase> <!-- Garante que o relatório seja gerado antes do empacotamento -->
+                        <goals>
+                            <goal>report</goal> <!-- Gera o relatório de cobertura com base nos dados coletados -->
+                        </goals>
+                    </execution>
+
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
