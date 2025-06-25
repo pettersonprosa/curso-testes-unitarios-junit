@@ -28,9 +28,12 @@ public class SaudacaoUtilTest {
         int horaValida = 9;
         String saudacao = saudar(horaValida);
         // assertEquals("Bom dia", saudacao);
+        String saudacaoCorreta = "Bom dia";
         
         Assertions.assertThat(saudacao)
-                .isEqualTo("Bom dia");
+                .as("Validando se a saudação é %s", saudacaoCorreta)
+                .withFailMessage("Erro: Saudação incorreta! Resultado: %s", saudacao)
+                .isEqualTo(saudacaoCorreta);
                 // .withFailMessage("Saudação incorreta!") //quando usamos msg customizada ela
                 // não mostra as comparações dos valores;
     }
