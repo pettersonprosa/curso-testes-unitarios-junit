@@ -1,10 +1,11 @@
 package com.junit.ecommerce;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -12,406 +13,240 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-@DisplayName("Carrinho de Compras")
+@DisplayName("Carrinho de compras")
 class CarrinhoCompraTest {
+
+    private CarrinhoCompra carrinhoCompra;
+    private Cliente cliente;
+    private List<ItemCarrinhoCompra> itens;
+    private Produto notebook;
+    private Produto desktop;
+    private Produto tablet;
+
+    @Nested
+    @DisplayName("Dado um carrinho de três itens")
+    class DadoUmCarrinhoComDoisItens {
+
+        @BeforeEach
+        public void beforeEach() {
+            cliente = new Cliente(1L, "Alex Silva");
+
+            notebook = new Produto(1L, "Notebook", "Notebook", BigDecimal.TEN);
+            desktop = new Produto(2L, "Desktop", "Desktop", BigDecimal.valueOf(20.50));
+            tablet = new Produto(3L, "Tablet", "Tablet", BigDecimal.valueOf(30.50));
+
+            itens = new ArrayList<>();
+            itens.add(new ItemCarrinhoCompra(notebook, 2));
+            itens.add(new ItemCarrinhoCompra(desktop, 1));
+
+            carrinhoCompra = new CarrinhoCompra(cliente, itens);
+        }
+
+        @Nested
+        @DisplayName("Quando retornar itens")
+        class QuandoRetornarItens {
+
+            @Test
+            @DisplayName("Então deve retornar dois itens")
+            void entaoDeveRetornarDoisItens() {
+                assertEquals(2, carrinhoCompra.getItens().size());
+            }
+
+            @Test
+            @DisplayName("E deve retornar uma nova instância da lista de itens")
+            void eDeveRetornarUmaNovaLista() {
+                carrinhoCompra.getItens().clear(); //Get Itens, retorna uma nova lista
+                assertEquals(2, carrinhoCompra.getItens().size()); //Lista permaneceu intacta
+            }
+
+        }
+
+        @Nested
+        @DisplayName("Quando remover um notebook")
+        class QuandoRemoverUmItem {
+
+            @BeforeEach
+            public void beforeEach() {
+                carrinhoCompra.removerProduto(notebook);
+            }
+
+            @Test
+            @DisplayName("Então deve diminuir a quantidade total de itens")
+            void entaoDeveDiminuirQuantidadeTotal() {
+                assertEquals(1, carrinhoCompra.getItens().size());
+            }
+
+            @Test
+            @DisplayName("E não deve remover demais itens")
+            void naoDeveRemoverDemaisItens() {
+                assertEquals(desktop, carrinhoCompra.getItens().get(0).getProduto());
+            }
+
+        }
+
+        @Nested
+        @DisplayName("Quando aumentar quantidade de um notebook")
+        class QuandoAumentarQuantidade {
+
+            @BeforeEach
+            void beforeEach() {
+                carrinhoCompra.aumentarQuantidadeProduto(notebook);
+            }
+
+            @Test
+            @DisplayName("Então deve somar na quantidade dos itens iguais")
+            void deveSomarNaQuantidade() {
+                assertEquals(3, carrinhoCompra.getItens().get(0).getQuantidade());
+                assertEquals(1, carrinhoCompra.getItens().get(1).getQuantidade());
+            }
+
+            @Test
+            @DisplayName("Então deve retornar quatro de quantidade total de itens")
+            void deveRetornarQuantidadeTotalItens() {
+                assertEquals(4, carrinhoCompra.getQuantidadeTotalDeProdutos());
+            }
+
+            @Test
+            @DisplayName("Então deve retornar valor total correto de itens")
+            void deveRetornarValorTotalItens() {
+                assertEquals(new BigDecimal("50.5"), carrinhoCompra.getValorTotal());
+            }
+        }
+
+        @Nested
+        @DisplayName("Quando diminuir quantidade de um notebook")
+        class QuandoDiminuirQuantidade {
+
+            @BeforeEach
+            void beforeEach() {
+                carrinhoCompra.diminuirQuantidadeProduto(notebook);
+            }
+
+            @Test
+            @DisplayName("Então deve somar na quantidade dos itens iguais")
+            void deveSomarNaQuantidade() {
+                assertEquals(1, carrinhoCompra.getItens().get(0).getQuantidade());
+                assertEquals(1, carrinhoCompra.getItens().get(1).getQuantidade());
+            }
+
+            @Test
+            @DisplayName("Então deve retornar três de quantidade total de itens")
+            void deveRetornarQuantidadeTotalItens() {
+                assertEquals(2, carrinhoCompra.getQuantidadeTotalDeProdutos());
+            }
+
+            @Test
+            @DisplayName("Então deve retornar valor total correto de itens")
+            void deveRetornarValorTotalItens() {
+                assertEquals(new BigDecimal("30.5"), carrinhoCompra.getValorTotal());
+            }
+        }
+
+        @Nested
+        @DisplayName("Quando diminuir quantidade de um item com apenas um de quantidade")
+        class QuandoDiminuirQuantidadeDeItemUnico {
+
+            @BeforeEach
+            void beforeEach() {
+                carrinhoCompra.diminuirQuantidadeProduto(desktop);
+            }
+
+            @Test
+            @DisplayName("Então deve remover item")
+            void entaoDeveRemoverItem() {
+                assertNotEquals(carrinhoCompra.getItens().get(0).getProduto(), desktop);
+            }
+        }
+
+        @Nested
+        @DisplayName("Quando adiconar item com quantidade inválida")
+        class QuandoAdicionarItemComQuantidadeInvalida {
+
+            @Test
+            @DisplayName("Então deve lançar exception")
+            void entaoDeveFalhar() {
+                assertThrows(RuntimeException.class, ()-> carrinhoCompra.adicionarProduto(desktop, -1));
+            }
+        }
+
+        @Nested
+        @DisplayName("Quando esvaziar carrinho")
+        class QuandoEsvaziarCarrinho {
+
+            @BeforeEach
+            void beforeEach() {
+                carrinhoCompra.esvaziar();
+            }
+
+            @Test
+            @DisplayName("Então deve somar na quantidade dos itens iguais")
+            void deveSomarNaQuantidade() {
+                assertEquals(0, carrinhoCompra.getItens().size());
+            }
+
+            @Test
+            @DisplayName("Então deve retornar zero de quantidade total de itens")
+            void deveRetornarQuantidadeTotalItens() {
+                assertEquals(0, carrinhoCompra.getQuantidadeTotalDeProdutos());
+            }
+
+            @Test
+            @DisplayName("Então deve retornar zero de valor total de itens")
+            void deveRetornarValorTotalItens() {
+                assertEquals(BigDecimal.ZERO, carrinhoCompra.getValorTotal());
+            }
+        }
+
+    }
+
     @Nested
     @DisplayName("Dado um carrinho vazio")
-    class CarrinhoVazio {
-        private CarrinhoCompra carrinho;
-        private Cliente cliente;
-        private Produto produto1;
-        // private Produto produto2;
+    class DadoUmCarinhoVazio {
 
         @BeforeEach
-        void beforeEach() {
-            cliente = new Cliente(1L, "João Silva");
-            produto1 = new Produto(1L, "Notebook", "Notebook Gamer Asus", new BigDecimal("2500.00"));
-            // produto2 = new Produto(2L, "Mouse", "Mouse Razer", new BigDecimal("50.00"));
-            carrinho = new CarrinhoCompra(cliente);
-        }
+        public void beforeEach() {
+            cliente = new Cliente(1L, "Alex Silva");
 
-        @Test
-        @DisplayName("Então deve retornar lista de itens vazia")
-        void deveRetornarListaVazia() {
-            assertTrue(carrinho.getItens().isEmpty());
-        }
+            notebook = new Produto(1L, "Notebook", "Notebook", BigDecimal.TEN);
+            desktop = new Produto(2L, "Desktop", "Desktop", BigDecimal.valueOf(20.50));
+            tablet = new Produto(3L, "Tablet", "Tablet", BigDecimal.valueOf(30.50));
 
-        @Test
-        @DisplayName("Então deve retornar valor total zero")
-        void deveRetornarValorTotalZero() {
-            assertEquals(BigDecimal.ZERO, carrinho.getValorTotal());
-        }
+            itens = new ArrayList<>();
 
-        @Test
-        @DisplayName("Então deve retornar quantidade total zero")
-        void deveRetornarQuantidadeTotalZero() {
-            assertEquals(0, carrinho.getQuantidadeTotalDeProdutos());
+            carrinhoCompra = new CarrinhoCompra(cliente, itens);
         }
 
         @Nested
-        @DisplayName("Quando adicionar um produto com quantidade válida")
-        class AdicionarProdutoValido {
-            @Test
-            @DisplayName("Então deve adicionar o produto ao carrinho")
-            void deveAdicionarProdutoAoCarrinho() {
-                carrinho.adicionarProduto(produto1, 2);
+        @DisplayName("Quando adicionar dois notebooks iguais e um desktop")
+        class QuandoAdicionarDoisItensIguais {
 
-                assertEquals(1, carrinho.getItens().size());
-                assertEquals(produto1, carrinho.getItens().get(0).getProduto());
-                assertEquals(2, carrinho.getItens().get(0).getQuantidade());
+            @BeforeEach
+            void beforeEach() {
+                carrinhoCompra.adicionarProduto(notebook, 1);
+                carrinhoCompra.adicionarProduto(notebook, 1);
+                carrinhoCompra.adicionarProduto(desktop, 1);
             }
 
             @Test
-            @DisplayName("Então deve calcular valor total corretamente")
-            void deveCalcularValorTotalCorretamente() {
-                carrinho.adicionarProduto(produto1, 2);
-
-                assertEquals(new BigDecimal("5000.00"), carrinho.getValorTotal());
-            }
-        }
-
-        @Nested
-        @DisplayName("Quando tentar adicionar produto nulo")
-        class AdicionarProdutoNulo {
-            @Test
-            @DisplayName("Então deve lançar NullPointerException")
-            void deveLancarNullPointerException() {
-                assertThrows(NullPointerException.class,
-                        () -> carrinho.adicionarProduto(null, 1));
-            }
-        }
-
-        @Nested
-        @DisplayName("Quando tentar adicionar produto com quantidade inválida")
-        class AdicionarProdutoQuantidadeInvalida {
-            @Test
-            @DisplayName("Então deve lançar IllegalArgumentException para quantidade zero")
-            void deveLancarExceptionQuantidadeZero() {
-                assertThrows(IllegalArgumentException.class,
-                        () -> carrinho.adicionarProduto(produto1, 0));
+            @DisplayName("Então deve somar na quantidade dos itens iguais")
+            void entaoDeveSomarNaQuantidade() {
+                assertEquals(2, carrinhoCompra.getItens().get(0).getQuantidade());
+                assertEquals(1, carrinhoCompra.getItens().get(1).getQuantidade());
             }
 
             @Test
-            @DisplayName("Então deve lançar IllegalArgumentException para quantidade negativa")
-            void deveLancarExceptionQuantidadeNegativa() {
-                assertThrows(IllegalArgumentException.class,
-                        () -> carrinho.adicionarProduto(produto1, -1));
-            }
-        }
-
-        @Nested
-        @DisplayName("Quando tentar remover produto inexistente")
-        class RemoverProdutoInexistente {
-            @Test
-            @DisplayName("Então deve lançar IllegalArgumentException")
-            void deveLancarIllegalArgumentException() {
-                assertThrows(IllegalArgumentException.class,
-                        () -> carrinho.removerProduto(produto1));
-            }
-        }
-
-        @Nested
-        @DisplayName("Quando tentar aumentar quantidade de produto inexistente")
-        class AumentarQuantidadeProdutoInexistente {
-            @Test
-            @DisplayName("Então deve lançar IllegalArgumentException")
-            void deveLancarIllegalArgumentException() {
-                assertThrows(IllegalArgumentException.class,
-                        () -> carrinho.aumentarQuantidadeProduto(produto1));
-            }
-        }
-
-        @Nested
-        @DisplayName("Quando tentar diminuir quantidade de produto inexistente")
-        class DiminuirQuantidadeProdutoInexistente {
-            @Test
-            @DisplayName("Então deve lançar IllegalArgumentException")
-            void deveLancarIllegalArgumentException() {
-                assertThrows(IllegalArgumentException.class,
-                        () -> carrinho.diminuirQuantidadeProduto(produto1));
-            }
-        }
-    }
-
-    @Nested
-    @DisplayName("Dado um carrinho com um produto")
-    class CarrinhoComUmProduto {
-        private CarrinhoCompra carrinho;
-        private Cliente cliente;
-        private Produto produto1;
-        private Produto produto2;
-
-        @BeforeEach
-        void beforeEach() {
-            cliente = new Cliente(1L, "João Silva");
-            produto1 = new Produto(1L, "Notebook", "Notebook Gamer Asus", new BigDecimal("2500.00"));
-            produto2 = new Produto(2L, "Mouse", "Mouse Razer", new BigDecimal("50.00"));
-            carrinho = new CarrinhoCompra(cliente);
-            carrinho.adicionarProduto(produto1, 1);
-        }
-
-        @Test
-        @DisplayName("Então deve retornar lista com um item")
-        void deveRetornarListaComUmItem() {
-            assertEquals(1, carrinho.getItens().size());
-        }
-
-        @Test
-        @DisplayName("Então deve retornar quantidade total um")
-        void deveRetornarQuantidadeTotalUm() {
-            assertEquals(1, carrinho.getQuantidadeTotalDeProdutos());
-        }
-
-        @Nested
-        @DisplayName("Quando adicionar o mesmo produto novamente")
-        class AdicionarMesmoProduto {
-            @Test
-            @DisplayName("Então deve incrementar a quantidade")
-            void deveIncrementarQuantidade() {
-                carrinho.adicionarProduto(produto1, 2);
-
-                assertEquals(1, carrinho.getItens().size());
-                assertEquals(3, carrinho.getItens().get(0).getQuantidade());
+            @DisplayName("E retornar três de quantidade total de itens")
+            void eRetornarQuantidadeTotalItens() {
+                assertEquals(3, carrinhoCompra.getQuantidadeTotalDeProdutos());
             }
 
             @Test
-            @DisplayName("Então deve atualizar valor total")
-            void deveAtualizarValorTotal() {
-                carrinho.adicionarProduto(produto1, 2);
-
-                assertEquals(new BigDecimal("7500.00"), carrinho.getValorTotal());
-            }
-        }
-
-        @Nested
-        @DisplayName("Quando adicionar produto diferente")
-        class AdicionarProdutoDiferente {
-            @Test
-            @DisplayName("Então deve ter dois itens no carrinho")
-            void deveTerDoisItensNoCarrinho() {
-                carrinho.adicionarProduto(produto2, 1);
-
-                assertEquals(2, carrinho.getItens().size());
+            @DisplayName("E retornar valor total correto de itens")
+            void eRetornarValorTotalItens() {
+                assertEquals(new BigDecimal("40.5"), carrinhoCompra.getValorTotal());
             }
 
-            @Test
-            @DisplayName("Então deve calcular valor total de ambos produtos")
-            void deveCalcularValorTotalAmbosProdutos() {
-                carrinho.adicionarProduto(produto2, 1);
-
-                assertEquals(new BigDecimal("2550.00"), carrinho.getValorTotal());
-            }
         }
 
-        @Nested
-        @DisplayName("Quando remover o produto")
-        class RemoverProduto {
-            @Test
-            @DisplayName("Então deve remover o produto do carrinho")
-            void deveRemoverProdutoDoCarrinho() {
-                carrinho.removerProduto(produto1);
-
-                assertTrue(carrinho.getItens().isEmpty());
-            }
-
-            @Test
-            @DisplayName("Então valor total deve ser zero")
-            void valorTotalDeveSerZero() {
-                carrinho.removerProduto(produto1);
-
-                assertEquals(BigDecimal.ZERO, carrinho.getValorTotal());
-            }
-        }
-
-        @Nested
-        @DisplayName("Quando aumentar quantidade do produto")
-        class AumentarQuantidadeProduto {
-            @Test
-            @DisplayName("Então deve incrementar quantidade em um")
-            void deveIncrementarQuantidadeEmUm() {
-                carrinho.aumentarQuantidadeProduto(produto1);
-
-                assertEquals(2, carrinho.getItens().get(0).getQuantidade());
-            }
-
-            @Test
-            @DisplayName("Então deve atualizar valor total")
-            void deveAtualizarValorTotal() {
-                carrinho.aumentarQuantidadeProduto(produto1);
-
-                assertEquals(new BigDecimal("5000.00"), carrinho.getValorTotal());
-            }
-        }
-
-        @Nested
-        @DisplayName("Quando diminuir quantidade do produto")
-        class DiminuirQuantidadeProduto {
-            @Test
-            @DisplayName("Então deve remover o produto do carrinho (quantidade = 1)")
-            void deveRemoverProdutoDoCarrinho() {
-                carrinho.diminuirQuantidadeProduto(produto1);
-
-                assertTrue(carrinho.getItens().isEmpty());
-            }
-        }
-
-        @Nested
-        @DisplayName("Quando esvaziar o carrinho")
-        class EsvaziarCarrinho {
-            @Test
-            @DisplayName("Então deve remover todos os itens")
-            void deveRemoverTodosItens() {
-                carrinho.esvaziar();
-
-                assertTrue(carrinho.getItens().isEmpty());
-            }
-
-            @Test
-            @DisplayName("Então valor total deve ser zero")
-            void valorTotalDeveSerZero() {
-                carrinho.esvaziar();
-
-                assertEquals(BigDecimal.ZERO, carrinho.getValorTotal());
-            }
-        }
-    }
-
-    @Nested
-    @DisplayName("Dado um carrinho com produto de quantidade maior que um")
-    class CarrinhoComProdutoQuantidadeMaior {
-        private CarrinhoCompra carrinho;
-        private Cliente cliente;
-        private Produto produto1;
-
-        @BeforeEach
-        void beforeEach() {
-            cliente = new Cliente(1L, "João Silva");
-            produto1 = new Produto(1L, "Notebook", "Notebook Asus", new BigDecimal("2500.00"));
-            carrinho = new CarrinhoCompra(cliente);
-            carrinho.adicionarProduto(produto1, 3);
-        }
-
-        @Nested
-        @DisplayName("Quando diminuir quantidade do produto")
-        class DiminuirQuantidadeProduto {
-            @Test
-            @DisplayName("Então deve decrementar quantidade em um")
-            void deveDecrementarQuantidadeEmUm() {
-                carrinho.diminuirQuantidadeProduto(produto1);
-
-                assertEquals(2, carrinho.getItens().get(0).getQuantidade());
-            }
-
-            @Test
-            @DisplayName("Então deve atualizar valor total")
-            void deveAtualizarValorTotal() {
-                carrinho.diminuirQuantidadeProduto(produto1);
-
-                assertEquals(new BigDecimal("5000.00"), carrinho.getValorTotal());
-            }
-
-            @Test
-            @DisplayName("Então produto deve permanecer no carrinho")
-            void produtoDevePermancerNoCarrinho() {
-                carrinho.diminuirQuantidadeProduto(produto1);
-
-                assertEquals(1, carrinho.getItens().size());
-            }
-        }
-    }
-
-    @Nested
-    @DisplayName("Dado um carrinho com múltiplos produtos")
-    class CarrinhoComMultiplosProdutos {
-        private CarrinhoCompra carrinho;
-        private Cliente cliente;
-        private Produto produto1;
-        private Produto produto2;
-
-        @BeforeEach
-        void beforeEach() {
-            cliente = new Cliente(1L, "João Silva");
-            produto1 = new Produto(1L, "Notebook", "Notebook Gamer Asus", new BigDecimal("2500.00"));
-            produto2 = new Produto(2L, "Mouse", "Mouse Razer", new BigDecimal("50.00"));
-            carrinho = new CarrinhoCompra(cliente);
-            carrinho.adicionarProduto(produto1, 2);
-            carrinho.adicionarProduto(produto2, 3);
-        }
-
-        @Test
-        @DisplayName("Então deve calcular quantidade total corretamente")
-        void deveCalcularQuantidadeTotalCorretamente() {
-            assertEquals(5, carrinho.getQuantidadeTotalDeProdutos());
-        }
-
-        @Test
-        @DisplayName("Então deve calcular valor total corretamente")
-        void deveCalcularValorTotalCorretamente() {
-            // 2 * 2500 + 3 * 50 = 5000 + 150 = 5150
-            assertEquals(new BigDecimal("5150.00"), carrinho.getValorTotal());
-        }
-
-        @Test
-        @DisplayName("Então getItens deve retornar cópia da lista")
-        void getItensDeveRetornarCopia() {
-            List<ItemCarrinhoCompra> itens = carrinho.getItens();
-            itens.clear();
-
-            // Lista original não deve ser afetada
-            assertEquals(2, carrinho.getItens().size());
-        }
-    }
-
-    @Nested
-    @DisplayName("Dado construção do carrinho")
-    class ConstrucaoCarrinho {
-        @Test
-        @DisplayName("Quando cliente é nulo então deve lançar NullPointerException")
-        void clienteNuloDeveLancarException() {
-            assertThrows(NullPointerException.class,
-                    () -> new CarrinhoCompra(null));
-        }
-
-        @Test
-        @DisplayName("Quando lista de itens é nula então deve lançar NullPointerException")
-        void listaItensNulaDeveLancarException() {
-            Cliente cliente = new Cliente(1L, "João Silva");
-            assertThrows(NullPointerException.class,
-                    () -> new CarrinhoCompra(cliente, null));
-        }
-    }
-
-    @Nested
-    @DisplayName("Dado operações com parâmetros nulos")
-    class OperacoesParametrosNulos {
-        private CarrinhoCompra carrinho;
-        private Cliente cliente;
-
-        @BeforeEach
-        void beforeEach() {
-            cliente = new Cliente(1L, "João Silva");
-            carrinho = new CarrinhoCompra(cliente);
-        }
-
-        @Test
-        @DisplayName("Quando remover produto nulo então deve lançar NullPointerException")
-        void removerProdutoNuloDeveLancarException() {
-            assertThrows(NullPointerException.class,
-                    () -> carrinho.removerProduto(null));
-        }
-
-        @Test
-        @DisplayName("Quando aumentar quantidade produto nulo então deve lançar NullPointerException")
-        void aumentarQuantidadeProdutoNuloDeveLancarException() {
-            assertThrows(NullPointerException.class,
-                    () -> carrinho.aumentarQuantidadeProduto(null));
-        }
-
-        @Test
-        @DisplayName("Quando diminuir quantidade produto nulo então deve lançar NullPointerException")
-        void diminuirQuantidadeProdutoNuloDeveLancarException() {
-            assertThrows(NullPointerException.class,
-                    () -> carrinho.diminuirQuantidadeProduto(null));
-        }
     }
 }
