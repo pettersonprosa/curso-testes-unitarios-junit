@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.assertj.core.api.Assertions;
+import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
@@ -29,11 +30,11 @@ public class SaudacaoUtilTest {
         String saudacao = saudar(horaValida);
         // assertEquals("Bom dia", saudacao);
         String saudacaoCorreta = "Bom dia";
+
+        Condition<String> bomDia = new Condition<String>((string) -> string.equals(saudacaoCorreta),
+                "igual a %s", saudacaoCorreta);
         
-        Assertions.assertThat(saudacao)
-                .as("Validando se a saudação é %s", saudacaoCorreta)
-                .withFailMessage("Erro: Saudação incorreta! Resultado: %s", saudacao)
-                .isEqualTo(saudacaoCorreta);
+        Assertions.assertThat(saudacao).is(bomDia);
                 // .withFailMessage("Saudação incorreta!") //quando usamos msg customizada ela
                 // não mostra as comparações dos valores;
     }
