@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -225,6 +226,15 @@ class CarrinhoCompraTest {
                 carrinhoCompra.adicionarProduto(notebook, 1);
                 carrinhoCompra.adicionarProduto(notebook, 1);
                 carrinhoCompra.adicionarProduto(desktop, 1);
+            }
+
+            @Test
+            @DisplayName("Então deve conter apenas produtos adicionados")
+            void entaoDeveConterApenasProdutosAdicionados() {
+                Assertions.assertThat(carrinhoCompra.getItens())
+                        .flatMap(ItemCarrinhoCompra::getProduto)
+                        .contains(notebook, desktop)
+                        .doesNotContain(tablet);
             }
 
             @Test
