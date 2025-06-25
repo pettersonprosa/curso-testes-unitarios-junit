@@ -3,7 +3,6 @@ package com.junit.utilidade;
 import static com.junit.utilidade.SaudacaoUtil.saudar;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -53,9 +52,13 @@ public class SaudacaoUtilTest {
     @Test
     public void Dado_uma_hora_invalida_Quando_saudar_Entao_deve_lancar_exception() {
         int horaInvalida = -10;
-        Executable chamadaInvalidaDeMetodo = () -> saudar(horaInvalida);
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, chamadaInvalidaDeMetodo);
-        assertEquals("Hora inválida", e.getMessage());
+        // Executable chamadaInvalidaDeMetodo = () -> saudar(horaInvalida);
+        // IllegalArgumentException e = assertThrows(IllegalArgumentException.class, chamadaInvalidaDeMetodo);
+        // assertEquals("Hora inválida", e.getMessage());
+
+        Assertions.assertThatThrownBy(() -> saudar(horaInvalida))
+                  .isInstanceOf(IllegalArgumentException.class)
+                  .hasMessage("Hora inválida");
     }
 
     @Test
